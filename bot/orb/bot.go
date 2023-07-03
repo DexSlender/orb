@@ -7,35 +7,37 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dexslender/orb/bot/util"
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/log"
+	"github.com/spf13/viper"
 )
 
 var _orb Orb
 
-func New(l log.Logger, c util.Config) *Orb {
-	_orb = Orb{Log: l, Config: c}
+func New(l log.Logger, v *viper.Viper) *Orb {
+	_orb = Orb{Log: l, Config: v}
 	return &_orb
 }
 
 type Orb struct {
 	bot.Client
 	Log    log.Logger
-	Config util.Config
+	Config *viper.Viper
 }
 
 func (o *Orb) SetupBot() {
 	var err error
 	if o.Client, err = disgo.New(
-		"",
+		o.Config.GetString("bot~token"),
 		bot.WithGatewayConfigOpts(
 			gateway.WithOS("mobile"),
 			gateway.WithIntents(gateway.IntentsNonPrivileged),
+			gateway.WithCompress(true),
 		),
 		bot.WithEventListeners(listeners),
+		bot.WithLogger(o.Log),
 	); err != nil {
 		o.Log.Fatal("Client error: ", err)
 	}

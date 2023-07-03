@@ -8,10 +8,10 @@ import (
 
 func main() {
 	l := log.New(log.Ltime | log.Lshortfile)
-	c := util.SetupConfig(l)
+	v := util.SetupConfig(l)
 
 	l.Info("Starting...")
-	o := orb.New(l, c)
+	o := orb.New(l, v)
 
 	o.SetupBot()
 
